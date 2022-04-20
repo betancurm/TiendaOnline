@@ -89,7 +89,7 @@ namespace TiendaOnline.web.Controllers
         return View(country);
     }
 
-        // GET: Owners/Edit/5
+        // GET: Coutries/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -163,6 +163,66 @@ namespace TiendaOnline.web.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        
+        //METODOS PARA DEPARTAMENTOS
+        //añadir departamento
+        public async Task<IActionResult> AddDepartment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Country country = await _context.Countries.FindAsync(id);
+            if (country == null)
+            {
+                return NotFound();
+            }
+            Department model = new Department { IdCountry = country.Id };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddDepartment(Department department)
+        {
+            if (ModelState.IsValid)
+            {
+                Country country = await _context.Countries
+                .Include(c => c.Departments)
+                .FirstOrDefaultAsync(c => c.Id == department.IdCountry);
+                if (country == null)
+                {
+                    return NotFound();
+                }
+                try
+                {
+                    department.Id = 0; // es necesario inicializar en 0 para que no se confunda con una actualización de un Departamento.
+                    country.Departments.Add(department);
+                    _context.Update(country);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction($"{nameof(Details)}/{country.Id}");
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "hay un registro con el mismo nombre.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty,
+                        dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(department);
+        }
+
+        //Editar departamento
         public async Task<IActionResult> EditDepartment(int? id)
         {
             if (id == null)
@@ -211,6 +271,8 @@ namespace TiendaOnline.web.Controllers
             }
             return View(department);
         }
+
+        //Borrar departamento
         public async Task<IActionResult> DeleteDepartment(int? id)
         {
             if (id == null)
@@ -230,24 +292,26 @@ namespace TiendaOnline.web.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction($"{nameof(Details)}/{country.Id}");
         }
+
+        //Detalles de departamento
         public async Task<IActionResult> DetailsDepartment(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            Department department = await _context.Departments
-            .Include(d => d.Cities)
-            .FirstOrDefaultAsync(m => m.Id == id);
+            Department department = await _context.Departments.Include(d => d.Cities).FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
                 return NotFound();
             }
-            Country country = await _context.Countries.FirstOrDefaultAsync(c =>
-            c.Departments.FirstOrDefault(d => d.Id == department.Id) != null);
+            Country country = await _context.Countries.FirstOrDefaultAsync(c => c.Departments.FirstOrDefault(d => d.Id == department.Id) != null);
             department.IdCountry = country.Id;
             return View(department);
         }
+        
+        //METODOS PARA CIUDAD
+        //Añadir Ciudad
         public async Task<IActionResult> AddCity(int? id)
         {
             if (id == null)
@@ -303,80 +367,9 @@ namespace TiendaOnline.web.Controllers
             }
             return View(city);
         }
-        private bool CountryExists(int id)
-        {
-            return _context.Countries.Any(e => e.Id == id);
-        }
-        public async Task<IActionResult> AddDepartment(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            Country country = await _context.Countries.FindAsync(id);
-            if (country == null)
-            {
-                return NotFound();
-            }
-            Department model = new Department { IdCountry = country.Id };
-            return View(model);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddDepartment(Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                Country country = await _context.Countries
-                .Include(c => c.Departments)
-                .FirstOrDefaultAsync(c => c.Id == department.IdCountry);
-                if (country == null)
-                {
-                    return NotFound();
-                }
-                try
-                {
-                    department.Id = 0; // es necesario inicializar en 0 para que no se confunda con una actualización de un Departamento.
-                    country.Departments.Add(department);
-                    _context.Update(country);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction($"{nameof(Details)}/{country.Id}");
-                }
-                catch (DbUpdateException dbUpdateException)
-                {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
-                    {
-                        ModelState.AddModelError(string.Empty, "There are a record with the same name.");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty,
-                        dbUpdateException.InnerException.Message);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    ModelState.AddModelError(string.Empty, exception.Message);
-                }
-            }
-            return View(department);
-        }
-        public async Task<IActionResult> EditCity(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            City city = await _context.Cities.FindAsync(id);
-            if (city == null)
-            {
-                return NotFound();
-            }
-            Department department = await _context.Departments.FirstOrDefaultAsync(d =>
-            d.Cities.FirstOrDefault(c => c.Id == city.Id) != null);
-            city.IdDepartment = department.Id;
-            return View(city);
-        }
+
+        //Editar Ciudad
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCity(City city)
@@ -408,5 +401,47 @@ namespace TiendaOnline.web.Controllers
             }
             return View(city);
         }
+        public async Task<IActionResult> EditCity(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            City city = await _context.Cities.FindAsync(id);
+            if (city == null)
+            {
+                return NotFound();
+            }
+            Department department = await _context.Departments.FirstOrDefaultAsync(d =>
+            d.Cities.FirstOrDefault(c => c.Id == city.Id) != null);
+            city.IdDepartment = department.Id;
+            return View(city);
+        }
+
+        //Borrar Ciudad
+        public async Task<IActionResult> DeleteCity(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            City city = await _context.Cities
+            .FirstOrDefaultAsync(m => m.Id == id);
+            if (city == null)
+            {
+                return NotFound();
+            }
+            Department department = await _context.Departments.FirstOrDefaultAsync(d =>
+            d.Cities.FirstOrDefault(c => c.Id == city.Id) != null);
+            _context.Cities.Remove(city);
+            await _context.SaveChangesAsync();
+            return RedirectToAction($"{nameof(DetailsDepartment)}/{department.Id}");
+        }
+
+        private bool CountryExists(int id)
+        {
+            return _context.Countries.Any(e => e.Id == id);
+        }
+
     }
 }
