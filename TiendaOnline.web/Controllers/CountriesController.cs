@@ -209,5 +209,24 @@ namespace TiendaOnline.web.Controllers
             }
             return View(department);
         }
+        public async Task<IActionResult> DeleteDepartment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Department department = await _context.Departments
+            .Include(d => d.Cities)
+            .FirstOrDefaultAsync(m => m.Id == id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            Country country = await _context.Countries.FirstOrDefaultAsync(c =>
+            c.Departments.FirstOrDefault(d => d.Id == department.Id) != null);
+            _context.Departments.Remove(department);
+            await _context.SaveChangesAsync();
+            return RedirectToAction($"{nameof(Details)}/{country.Id}");
+        }
     }
 }
