@@ -11,7 +11,7 @@ using TiendaOnline.web.Data;
 namespace TiendaOnline.web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220324171240_Test")]
+    [Migration("20220331152336_Test")]
     partial class Test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
