@@ -152,7 +152,9 @@ namespace TiendaOnline.web.Controllers
                 return NotFound();
             }
             Country country = await _context.Countries
-            .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.Departments)
+                .ThenInclude(d => d.Cities)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (country == null)
             {
                 return NotFound();
