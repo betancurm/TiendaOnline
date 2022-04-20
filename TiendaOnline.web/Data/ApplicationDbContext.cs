@@ -16,9 +16,9 @@ namespace TiendaOnline.web.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Country>().HasIndex(t => t.Name).IsUnique();
-
             modelBuilder.Entity<City>().HasIndex(t => t.Name).IsUnique();
+
+            modelBuilder.Entity<Country>().HasIndex(t => t.Name).IsUnique();
 
             modelBuilder.Entity<Department>().HasIndex(t => t.Name).IsUnique();
         }
