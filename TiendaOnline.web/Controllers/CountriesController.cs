@@ -230,5 +230,23 @@ namespace TiendaOnline.web.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction($"{nameof(Details)}/{country.Id}");
         }
+        public async Task<IActionResult> DetailsDepartment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Department department = await _context.Departments
+            .Include(d => d.Cities)
+            .FirstOrDefaultAsync(m => m.Id == id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            Country country = await _context.Countries.FirstOrDefaultAsync(c =>
+            c.Departments.FirstOrDefault(d => d.Id == department.Id) != null);
+            department.IdCountry = country.Id;
+            return View(department);
+        }
     }
 }
