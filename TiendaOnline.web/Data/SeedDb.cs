@@ -38,7 +38,7 @@ namespace TiendaOnline.web.Data
                         },
                         new Department
                         {
-                            Name = "Bogotá",
+                            Name = "Cundinamarca",
                             Cities = new List<City>
                             {
                                 new City { Name = "Bogotá" }
@@ -46,38 +46,38 @@ namespace TiendaOnline.web.Data
                         },
                         new Department
                         {
-                            Name = "Valle del Cauca",
+                            Name = "Nariño",
                             Cities = new List<City>
                             {
-                                new City { Name = "Calí" },
-                                new City { Name = "Buenaventura" },
-                                new City { Name = "Palmira" }
+                                new City { Name = "Pasto" },
+                                new City { Name = "Ipiales" },
+                                new City { Name = "Pupiales" }
                             }
                         }
                     }
                 });
                 _context.Countries.Add(new Country
                 {
-                    Name = "USA",
+                    Name = "Argentina",
                     Departments = new List<Department>
                     {
                         new Department
                         {
-                            Name = "California",
+                            Name = "Buenos Aires",
                             Cities = new List<City>
                             {
-                                new City { Name = "Los Angeles" },
-                                new City { Name = "San Diego" },
-                                new City { Name = "San Francisco" }
+                                new City { Name = "Mar Del Plata" },
+                                new City { Name = "Quilmes" },
+                                new City { Name = "Lanús" }
                             }
                         },
                         new Department
                         {
-                            Name = "Illinois",
+                            Name = "Mendoza",
                             Cities = new List<City>
                             {
-                                new City { Name = "Chicago" },
-                                new City { Name = "Springfield" }
+                                new City { Name = "Godoy Cruz" },
+                                new City { Name = "Las Heras" }
                             }
                         }
                     }

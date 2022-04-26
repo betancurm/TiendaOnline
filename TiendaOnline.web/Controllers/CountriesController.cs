@@ -163,7 +163,7 @@ namespace TiendaOnline.web.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        
+
         //METODOS PARA DEPARTAMENTOS
         //añadir departamento
         public async Task<IActionResult> AddDepartment(int? id)
@@ -180,12 +180,12 @@ namespace TiendaOnline.web.Controllers
             Department model = new Department { IdCountry = country.Id };
             return View(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddDepartment(Department department)
         {
-            if (ModelState.IsValid)
+            
+        if (ModelState.IsValid)
             {
                 Country country = await _context.Countries
                 .Include(c => c.Departments)
@@ -196,17 +196,21 @@ namespace TiendaOnline.web.Controllers
                 }
                 try
                 {
-                    department.Id = 0; // es necesario inicializar en 0 para que no se confunda con una actualización de un Departamento.
+                    department.Id = 0;
                     country.Departments.Add(department);
                     _context.Update(country);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction($"{nameof(Details)}/{country.Id}");
+                    return RedirectToAction(nameof(Details), new
+                    {
+                        Id = country.Id
+                    });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if
+                    (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
-                        ModelState.AddModelError(string.Empty, "hay un registro con el mismo nombre.");
+                        ModelState.AddModelError(string.Empty, "There are a record with the same name.");
                     }
                     else
                     {
@@ -249,12 +253,14 @@ namespace TiendaOnline.web.Controllers
                 {
                     _context.Update(department);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction($"{nameof(Details)}/{department.IdCountry}");
+                    return RedirectToAction(nameof(Details), new
+                    {
+                        Id = department.IdCountry
+                    });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
-                 
-                if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
                     {
                         ModelState.AddModelError(string.Empty, "There are a record with the same name.");
                     }
@@ -266,7 +272,8 @@ namespace TiendaOnline.web.Controllers
                 }
                 catch (Exception exception)
                 {
-                    ModelState.AddModelError(string.Empty, exception.Message);
+                    
+                ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
             return View(department);
@@ -290,7 +297,7 @@ namespace TiendaOnline.web.Controllers
             c.Departments.FirstOrDefault(d => d.Id == department.Id) != null);
             _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
-            return RedirectToAction($"{nameof(Details)}/{country.Id}");
+            return RedirectToAction(nameof(Details), new { Id = country.Id });
         }
 
         //Detalles de departamento
@@ -346,7 +353,7 @@ namespace TiendaOnline.web.Controllers
                     department.Cities.Add(city);
                     _context.Update(department);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction($"{nameof(DetailsDepartment)}/{department.Id}");
+                    return RedirectToAction(nameof(DetailsDepartment), new { Id = department.Id });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -380,7 +387,7 @@ namespace TiendaOnline.web.Controllers
                 {
                     _context.Update(city);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction($"{nameof(DetailsDepartment)}/{city.IdDepartment}");
+                    return RedirectToAction(nameof(DetailsDepartment), new { Id = city.IdDepartment });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -431,17 +438,13 @@ namespace TiendaOnline.web.Controllers
             {
                 return NotFound();
             }
-            Department department = await _context.Departments.FirstOrDefaultAsync(d =>
-            d.Cities.FirstOrDefault(c => c.Id == city.Id) != null);
+            Department department = await _context.Departments.FirstOrDefaultAsync(d
+            => d.Cities.FirstOrDefault(c => c.Id == city.Id) != null);
             _context.Cities.Remove(city);
             await _context.SaveChangesAsync();
-            return RedirectToAction($"{nameof(DetailsDepartment)}/{department.Id}");
+            return RedirectToAction(nameof(DetailsDepartment), new{ Id = department.Id});
         }
 
-        private bool CountryExists(int id)
-        {
-            return _context.Countries.Any(e => e.Id == id);
-        }
 
     }
 }

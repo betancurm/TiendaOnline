@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Index";
 }
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css"
 href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
@@ -59,7 +60,6 @@ href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 </div>
 
 <partial name="_DeleteDialog" />
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 <script type="text/javascript" charset="utf8"
